@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => env('AUTH_GUARD', 'customer'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'customers'),
     ],
 
     /*
@@ -36,9 +36,17 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'customer' => [
+            'driver' => 'session',
+            'provider' => 'customers',
+        ],
+        'admin' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'customers',
         ],
     ],
 
@@ -60,6 +68,10 @@ return [
     */
 
     'providers' => [
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Customer::class,
+        ],
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
@@ -91,6 +103,12 @@ return [
     */
 
     'passwords' => [
+        'customers' => [
+            'provider' => 'customers',
+            'table' => 'customer_password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
