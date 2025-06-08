@@ -25,7 +25,7 @@
                 <SidebarLink href="#" :label="translations.nav.categories" icon="category" />
                 <SidebarLink href="#" :label="translations.nav.orders" icon="order" />
                 <SidebarLink href="#" :label="translations.nav.customers" icon="customer" />
-                <SidebarLink href="#" :label="translations.nav.settings" icon="setting" />
+                <SidebarLink :href="route('admin.settings.index')" :label="translations.nav.settings" icon="setting" />
             </nav>
         </div>
 

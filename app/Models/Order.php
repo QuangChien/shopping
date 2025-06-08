@@ -15,55 +15,105 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'customer_id',
-        'quote_id',
         'status_id',
+        'payment_method_id',
+        'shipping_method_id',
+        'billing_address',
+        'shipping_address',
         'subtotal',
         'tax_amount',
         'shipping_amount',
         'discount_amount',
-        'grand_total',
-        'shipping_address',
-        'billing_address',
-        'payment_method_id',
-        'shipping_method_id',
-        'coupon_id',
-        'coupon_code',
+        'total',
         'payment_status',
         'shipping_status',
         'notes',
         'shipped_at',
-        'delivered_at',
+        'delivered_at'
     ];
 
     protected $casts = [
-        'subtotal' => 'decimal:4',
-        'tax_amount' => 'decimal:4',
-        'shipping_amount' => 'decimal:4',
-        'discount_amount' => 'decimal:4',
-        'grand_total' => 'decimal:4',
-        'shipping_address' => 'array',
         'billing_address' => 'array',
+        'shipping_address' => 'array',
+        'subtotal' => 'float',
+        'tax_amount' => 'float',
+        'shipping_amount' => 'float',
+        'discount_amount' => 'float',
+        'total' => 'float',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
     ];
 
+    /**
+     * Automatically generate order code when creating new order
+     */
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($order) {
-            if (!$order->order_number) {
-                $order->order_number = static::generateOrderNumber();
+            // If there is no order code, generate one automatically
+            if (empty($order->order_number)) {
+                $order->order_number = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
             }
         });
     }
 
     /**
-     * Get the customer that owns this order.
+     * Customer Relations
      */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Relationship with order status
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class, 'status_id');
+    }
+
+    /**
+     * Relationship with payment method
+     */
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
+    /**
+     * Relationship with shipping method
+     */
+    public function shippingMethod(): BelongsTo
+    {
+        return $this->belongsTo(ShippingMethod::class);
+    }
+
+    /**
+     * Relationship to order items
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Check if the order can be cancelled
+     */
+    public function canBeCancelled(): bool
+    {
+        $notCancellableStatuses = ['completed', 'delivered', 'shipped'];
+        return !in_array($this->status->name, $notCancellableStatuses);
+    }
+
+    /**
+     * Check if the order has been paid
+     */
+    public function isPaid(): bool
+    {
+        return $this->payment_status === 'paid';
     }
 
     /**
@@ -75,43 +125,11 @@ class Order extends Model
     }
 
     /**
-     * Get the order status.
-     */
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(OrderStatus::class, 'status_id');
-    }
-
-    /**
-     * Get the payment method.
-     */
-    public function paymentMethod(): BelongsTo
-    {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
-    }
-
-    /**
-     * Get the shipping method.
-     */
-    public function shippingMethod(): BelongsTo
-    {
-        return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
-    }
-
-    /**
      * Get the coupon used.
      */
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class, 'coupon_id');
-    }
-
-    /**
-     * Get the items for this order.
-     */
-    public function items(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
     }
 
     /**
@@ -128,16 +146,16 @@ class Order extends Model
     public function updateStatus(string $statusName): bool
     {
         $status = OrderStatus::where('name', $statusName)->first();
-        
+
         if (!$status) {
             return false;
         }
 
         $this->update(['status_id' => $status->id]);
-        
+
         // Handle status-specific actions
         $this->handleStatusChange($statusName);
-        
+
         return true;
     }
 
@@ -151,12 +169,12 @@ class Order extends Model
                 $this->update(['shipped_at' => now()]);
                 $this->reserveInventory();
                 break;
-                
+
             case 'delivered':
                 $this->update(['delivered_at' => now()]);
                 $this->reduceInventory();
                 break;
-                
+
             case 'cancelled':
                 $this->releaseInventory();
                 break;
@@ -200,31 +218,11 @@ class Order extends Model
     }
 
     /**
-     * Generate a unique order number.
-     */
-    public static function generateOrderNumber(): string
-    {
-        do {
-            $orderNumber = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(8));
-        } while (static::where('order_number', $orderNumber)->exists());
-
-        return $orderNumber;
-    }
-
-    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
     {
         return 'order_number';
-    }
-
-    /**
-     * Check if order is paid.
-     */
-    public function isPaid(): bool
-    {
-        return $this->payment_status === 'paid';
     }
 
     /**
@@ -241,14 +239,6 @@ class Order extends Model
     public function isDelivered(): bool
     {
         return $this->shipping_status === 'delivered' || !is_null($this->delivered_at);
-    }
-
-    /**
-     * Check if order can be cancelled.
-     */
-    public function canBeCancelled(): bool
-    {
-        return !$this->isShipped() && $this->status->name !== 'cancelled';
     }
 
     /**
@@ -292,4 +282,4 @@ class Order extends Model
     {
         return $query->where('created_at', '>=', now()->subDays($days));
     }
-} 
+}

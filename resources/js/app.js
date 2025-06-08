@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import axios from 'axios';
+import AlertContainer from './Components/AlertContainer.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -46,6 +47,37 @@ const initApp = async () => {
 
                 // Add global translation method
                 app.config.globalProperties.$t = window.trans;
+                
+                // Register global components
+                app.component('AlertContainer', AlertContainer);
+
+                // Global alert management
+                app.config.globalProperties.$alert = {
+                    success: (message, options = {}) => {
+                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
+                        if (alertContainer) {
+                            alertContainer.addAlert('success', message, options);
+                        }
+                    },
+                    error: (message, options = {}) => {
+                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
+                        if (alertContainer) {
+                            alertContainer.addAlert('error', message, options);
+                        }
+                    },
+                    warning: (message, options = {}) => {
+                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
+                        if (alertContainer) {
+                            alertContainer.addAlert('warning', message, options);
+                        }
+                    },
+                    info: (message, options = {}) => {
+                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
+                        if (alertContainer) {
+                            alertContainer.addAlert('info', message, options);
+                        }
+                    }
+                };
 
                 return app
                     .use(plugin)

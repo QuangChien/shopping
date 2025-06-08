@@ -13,8 +13,8 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
-        'product_name',
         'product_sku',
+        'product_name',
         'quantity',
         'price',
         'row_total',
@@ -22,14 +22,28 @@ class OrderItem extends Model
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'price' => 'decimal:4',
-        'row_total' => 'decimal:4',
+        'price' => 'float',
+        'row_total' => 'float',
         'product_options' => 'array',
     ];
 
     /**
-     * Get the order that owns this item.
+     * Automatically calculate row_total when setting quantity or price
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($item) {
+            // Tự động tính tổng tiền dòng nếu có quantity và price
+            if (isset($item->quantity) && isset($item->price) && !isset($item->row_total)) {
+                $item->row_total = $item->quantity * $item->price;
+            }
+        });
+    }
+
+    /**
+     * Quan hệ với đơn hàng
      */
     public function order(): BelongsTo
     {
@@ -84,4 +98,4 @@ class OrderItem extends Model
     {
         return isset($this->product_options[$key]);
     }
-} 
+}

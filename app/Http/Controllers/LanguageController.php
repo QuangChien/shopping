@@ -35,6 +35,8 @@ class LanguageController extends Controller
                 'auth' => trans('admin.auth', [], $locale) ?: [],
                 'dashboard' => trans('admin.dashboard', [], $locale) ?: [],
                 'nav' => trans('admin.nav', [], $locale) ?: [],
+                'categories' => trans('admin.categories', [], $locale) ?: [],
+                'products' => trans('admin.products', [], $locale) ?: [],
             ],
         ];
         

@@ -14,15 +14,16 @@ class PaymentMethod extends Model
         'name',
         'code',
         'description',
+        'instructions',
         'is_active',
         'sort_order',
-        'gateway_config',
+        'config',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
-        'gateway_config' => 'array',
+        'config' => 'array',
     ];
 
     /**
@@ -30,7 +31,7 @@ class PaymentMethod extends Model
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class, 'payment_method_id');
+        return $this->hasMany(Order::class);
     }
 
     /**
@@ -54,7 +55,7 @@ class PaymentMethod extends Model
      */
     public function requiresConfiguration(): bool
     {
-        return !empty($this->gateway_config);
+        return !empty($this->config);
     }
 
     /**
@@ -62,6 +63,6 @@ class PaymentMethod extends Model
      */
     public function getConfigValue(string $key, $default = null)
     {
-        return $this->gateway_config[$key] ?? $default;
+        return $this->config[$key] ?? $default;
     }
-} 
+}

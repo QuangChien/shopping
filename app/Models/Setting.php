@@ -14,7 +14,7 @@ class Setting extends Model
         'key',
         'value',
         'type',
-        'group',
+        'group_name',
         'description',
         'is_public',
     ];
@@ -44,32 +44,32 @@ class Setting extends Model
     /**
      * Set setting value by key.
      */
-    public static function setValue(string $key, $value, string $type = 'string', string $group = 'general'): void
+    public static function setValue(string $key, $value, string $type = 'string', string $group_name = 'general'): void
     {
         $setting = static::firstOrNew(['key' => $key]);
         
         $setting->fill([
             'value' => is_array($value) ? json_encode($value) : $value,
             'type' => $type,
-            'group' => $group,
+            'group_name' => $group_name,
         ]);
         
         $setting->save();
         
         // Clear cache
         Cache::forget('setting_' . $key);
-        Cache::forget('settings_group_' . $group);
+        Cache::forget('settings_group_' . $group_name);
     }
 
     /**
      * Get all settings for a group.
      */
-    public static function getGroup(string $group): array
+    public static function getGroup(string $group_name): array
     {
-        $cacheKey = 'settings_group_' . $group;
+        $cacheKey = 'settings_group_' . $group_name;
         
-        return Cache::remember($cacheKey, 3600, function () use ($group) {
-            $settings = static::where('group', $group)->get();
+        return Cache::remember($cacheKey, 3600, function () use ($group_name) {
+            $settings = static::where('group_name', $group_name)->get();
             $result = [];
             
             foreach ($settings as $setting) {
@@ -123,7 +123,7 @@ class Setting extends Model
      */
     public static function clearCache(): void
     {
-        $groups = static::distinct()->pluck('group');
+        $groups = static::distinct()->pluck('group_name');
         
         foreach ($groups as $group) {
             Cache::forget('settings_group_' . $group);
@@ -157,9 +157,9 @@ class Setting extends Model
     /**
      * Scope a query for a specific group.
      */
-    public function scopeGroup($query, string $group)
+    public function scopeGroup($query, string $group_name)
     {
-        return $query->where('group', $group);
+        return $query->where('group_name', $group_name);
     }
 
     /**
@@ -171,13 +171,13 @@ class Setting extends Model
         
         static::saved(function ($setting) {
             Cache::forget('setting_' . $setting->key);
-            Cache::forget('settings_group_' . $setting->group);
+            Cache::forget('settings_group_' . $setting->group_name);
             Cache::forget('public_settings');
         });
         
         static::deleted(function ($setting) {
             Cache::forget('setting_' . $setting->key);
-            Cache::forget('settings_group_' . $setting->group);
+            Cache::forget('settings_group_' . $setting->group_name);
             Cache::forget('public_settings');
         });
     }
@@ -195,12 +195,12 @@ class Setting extends Model
      */
     public static function siteName(): string
     {
-        return static::getValue('site_name', 'Ecommerce Store');
+        return static::getValue('store_name', 'Ecommerce Store');
     }
 
     public static function siteDescription(): string
     {
-        return static::getValue('site_description', '');
+        return static::getValue('store_description', '');
     }
 
     public static function siteLogo(): string
@@ -210,7 +210,7 @@ class Setting extends Model
 
     public static function currency(): string
     {
-        return static::getValue('currency', 'USD');
+        return static::getValue('default_currency', 'USD');
     }
 
     public static function currencySymbol(): string
@@ -230,12 +230,12 @@ class Setting extends Model
 
     public static function taxRate(): float
     {
-        return (float) static::getValue('tax_rate', 0);
+        return (float) static::getValue('default_tax_rate', 0);
     }
 
     public static function shippingRate(): float
     {
-        return (float) static::getValue('shipping_rate', 0);
+        return (float) static::getValue('default_shipping_cost', 0);
     }
 
     public static function freeShippingThreshold(): float

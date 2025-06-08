@@ -13,15 +13,14 @@ class OrderStatus extends Model
     protected $fillable = [
         'name',
         'label',
-        'color',
         'description',
-        'is_default',
+        'color',
         'sort_order',
+        'is_default',
     ];
 
     protected $casts = [
         'is_default' => 'boolean',
-        'sort_order' => 'integer',
     ];
 
     /**
@@ -55,4 +54,4 @@ class OrderStatus extends Model
     {
         return str_starts_with($value, '#') ? $value : '#' . $value;
     }
-} 
+}

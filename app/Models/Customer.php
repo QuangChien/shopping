@@ -7,11 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
 
 class Customer extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,11 +23,14 @@ class Customer extends Authenticatable
         'first_name',
         'last_name',
         'email',
-        'phone',
-        'date_of_birth',
-        'gender',
-        'email_verified_at',
         'password',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'postal_code',
+        'country',
+        'is_active',
     ];
 
     /**
@@ -44,14 +48,11 @@ class Customer extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'date_of_birth' => 'date',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+    ];
 
     /**
      * Get the customer's addresses.
@@ -90,7 +91,7 @@ class Customer extends Authenticatable
      */
     public function getFullNameAttribute(): string
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return "{$this->first_name} {$this->last_name}";
     }
 
     /**

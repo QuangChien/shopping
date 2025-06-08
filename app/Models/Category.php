@@ -13,24 +13,23 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'parent_id',
         'name',
         'slug',
         'description',
-        'image',
+        'parent_id',
+        'is_active',
+        'sort_order',
         'meta_title',
         'meta_description',
-        'sort_order',
-        'is_active',
+        'image',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'sort_order' => 'integer',
     ];
 
     /**
-     * Get the parent category.
+     * Relationship to parent category
      */
     public function parent(): BelongsTo
     {
@@ -38,15 +37,15 @@ class Category extends Model
     }
 
     /**
-     * Get the child categories.
+     * Relationship with subcategories
      */
     public function children(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
     /**
-     * Get the products for this category.
+     * Relationship with products (many-to-many)
      */
     public function products(): BelongsToMany
     {
@@ -69,6 +68,6 @@ class Category extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return 'id';
     }
 }

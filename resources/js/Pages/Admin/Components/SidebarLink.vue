@@ -1,9 +1,14 @@
 <template>
     <Link
         :href="href"
-        class="mt-2 flex items-center rounded-md p-2 text-gray-300 transition-colors duration-200 hover:bg-gray-800 hover:text-white"
+        class="mt-2 flex items-center rounded-md p-2 transition-colors duration-200"
+        :class="[
+            isActive
+                ? 'bg-blue-700 text-white font-medium shadow-md'
+                : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+        ]"
     >
-        <span class="mr-2">
+        <span class="mr-2" :class="{ 'text-white': isActive }">
             <component :is="iconComponent" />
         </span>
         <span>{{ label }}</span>
@@ -11,7 +16,7 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed, h } from 'vue';
 
 const props = defineProps({
@@ -27,6 +32,27 @@ const props = defineProps({
         type: String,
         required: true
     }
+});
+
+const page = usePage();
+
+// Check if the current link is active
+const isActive = computed(() => {
+    // Handling for routes with parameters
+    if (props.href === '#') return false;
+
+    // If href is full URL, extract path
+    let currentPath = page.url;
+    let linkPath = props.href;
+
+    // Check if href contains full URL
+    if (linkPath.startsWith('http')) {
+        const url = new URL(linkPath);
+        linkPath = url.pathname;
+    }
+
+    // Simple route matching handling
+    return currentPath.startsWith(linkPath);
 });
 
 const iconComponent = computed(() => {
@@ -74,7 +100,7 @@ const iconComponent = computed(() => {
             }
         }
     };
-    
+
     return icons[props.icon] || null;
 });
-</script> 
+</script>

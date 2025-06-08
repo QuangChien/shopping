@@ -1,3 +1,119 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    /* Animation for alert notifications */
+    .alert-enter {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    
+    .alert-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.5s, transform 0.5s;
+    }
+    
+    .alert-exit {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .alert-exit-active {
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    /* Shake animation for error alerts */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    .alert-shake {
+        animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    /* Pulse animation for success alerts */
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.5); }
+        70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+    }
+    
+    .alert-pulse {
+        animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) 1;
+    }
+    
+    /* Error field highlight animation */
+    @keyframes errorPulse {
+        0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+    
+    .error-highlight {
+        animation: errorPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) 2;
+        border-color: rgb(220, 38, 38) !important;
+        background-color: rgba(254, 226, 226, 0.7) !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3) !important;
+        z-index: 10;
+        position: relative;
+    }
+    
+    /* Focus ring style */
+    .focus-visible-ring {
+        @apply ring-2 ring-offset-2 ring-blue-500;
+    }
+}
+
+/* Tùy chỉnh thụt đầu dòng cho các tùy chọn của select */
+select option {
+    padding: 8px;
+    margin: 4px 0;
+}
+
+select option.font-semibold {
+    font-weight: 600;
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+select option.pl-4 {
+    padding-left: 1rem;
+}
+
+select option.pl-8 {
+    padding-left: 2rem;
+}
+
+select option.pl-12 {
+    padding-left: 3rem;
+}
+
+select option.text-indigo-700 {
+    color: #4338ca;
+}
+
+select option.text-blue-600 {
+    color: #2563eb;
+}
+
+select option.text-cyan-600 {
+    color: #0891b2;
+}
+
+/* Css bổ sung cho dropdown */
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}

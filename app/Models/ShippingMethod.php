@@ -15,24 +15,57 @@ class ShippingMethod extends Model
         'code',
         'description',
         'price',
-        'free_shipping_threshold',
         'is_active',
         'sort_order',
+        'calculation_method',
+        'calculation_rules',
     ];
 
     protected $casts = [
-        'price' => 'decimal:4',
-        'free_shipping_threshold' => 'decimal:4',
+        'price' => 'float',
         'is_active' => 'boolean',
-        'sort_order' => 'integer',
+        'calculation_rules' => 'array',
     ];
 
     /**
-     * Get the orders using this shipping method.
+     * Quan hệ với đơn hàng
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class, 'shipping_method_id');
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Tính giá vận chuyển dựa trên đơn hàng
+     */
+    public function calculatePrice(array $orderData): float
+    {
+        // Mặc định, trả về giá cố định
+        if ($this->calculation_method === 'fixed') {
+            return $this->price;
+        }
+
+        // Tính dựa trên trọng lượng
+        if ($this->calculation_method === 'weight') {
+            $totalWeight = 0;
+            if (isset($orderData['items'])) {
+                foreach ($orderData['items'] as $item) {
+                    $weight = $item['weight'] ?? 0;
+                    $quantity = $item['quantity'] ?? 1;
+                    $totalWeight += $weight * $quantity;
+                }
+            }
+
+            // Tìm khoảng trọng lượng phù hợp
+            $rules = $this->calculation_rules['weight_ranges'] ?? [];
+            foreach ($rules as $rule) {
+                if ($totalWeight >= ($rule['from'] ?? 0) && $totalWeight <= ($rule['to'] ?? PHP_FLOAT_MAX)) {
+                    return $rule['price'] ?? $this->price;
+                }
+            }
+        }
+
+        return $this->price;
     }
 
     /**

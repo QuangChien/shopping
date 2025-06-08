@@ -37,6 +37,20 @@ class HandleInertiaRequests extends Middleware
             'locale' => app()->getLocale(),
             'translations' => [
                 'auth' => trans('auth'),
+                'admin' => [
+                    'auth' => trans('admin.auth'),
+                    'dashboard' => trans('admin.dashboard'),
+                    'nav' => trans('admin.nav'),
+                    'settings' => trans('admin.settings'),
+                    'categories' => trans('admin.categories'),
+                    'products' => trans('admin.products'),
+                ],
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
             ],
         ];
     }
