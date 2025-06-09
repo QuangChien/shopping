@@ -1,18 +1,18 @@
 <template>
     <GuestLayout>
-        <Head :title="translations.login" />
+        <Head title="Admin Login" />
 
         <div class="mb-4 flex justify-end">
             <LanguageSwitcher />
         </div>
 
         <h1 class="mb-4 text-center text-2xl font-bold text-gray-700">
-            {{ translations.login }}
+            Admin Login
         </h1>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" :value="translations.email" />
+                <InputLabel for="email" value="Email" />
 
                 <TextInput
                     id="email"
@@ -28,7 +28,7 @@
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" :value="translations.password" />
+                <InputLabel for="password" value="Password" />
 
                 <TextInput
                     id="password"
@@ -45,7 +45,7 @@
             <div class="mt-4 block">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ translations.remember_me }}</span>
+                    <span class="ms-2 text-sm text-gray-600">Remember Me</span>
                 </label>
             </div>
 
@@ -55,7 +55,7 @@
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ translations.login_button }}
+                    Login
                 </PrimaryButton>
             </div>
         </form>
@@ -70,30 +70,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-
-const page = usePage();
-const defaultTranslations = {
-    login: 'Admin Login',
-    email: 'Email',
-    password: 'Password',
-    remember_me: 'Remember Me',
-    login_button: 'Login'
-};
-
-const translations = computed(() => {
-    if (page.props.translations && page.props.translations.admin && page.props.translations.admin.auth) {
-        return {
-            login: page.props.translations.admin.auth.login || defaultTranslations.login,
-            email: page.props.translations.admin.auth.email || defaultTranslations.email,
-            password: page.props.translations.admin.auth.password || defaultTranslations.password,
-            remember_me: page.props.translations.admin.auth.remember_me || defaultTranslations.remember_me,
-            login_button: page.props.translations.admin.auth.login_button || defaultTranslations.login_button
-        };
-    }
-    return defaultTranslations;
-});
+import { Head, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     email: '',

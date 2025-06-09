@@ -6,7 +6,6 @@ const props = defineProps({
     settings: Array,
     groupName: String,
     groupLabel: String,
-    translations: Object,
     fieldErrors: {
         type: Object,
         default: () => ({})
@@ -74,7 +73,6 @@ const groupedSettings = computed(() => {
                     v-for="setting in settingsGroup" 
                     :key="setting.id"
                     :setting="setting"
-                    :translations="translations"
                     :error="fieldErrors[setting.id]"
                     @update="(value) => $emit('updateSetting', setting.id, value)"
                     :ref="el => { if (el) settingRefs[setting.id] = el }"

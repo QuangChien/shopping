@@ -10,7 +10,6 @@ import NumberInput from './Inputs/NumberInput.vue';
 
 const props = defineProps({
     setting: Object,
-    translations: Object,
     error: {
         type: String,
         default: null
@@ -44,13 +43,8 @@ const formatLabel = computed(() => {
         .replace(/\b\w/g, char => char.toUpperCase());
 });
 
-// Get translation for boolean values
+// Get labels for boolean values
 const getBooleanLabel = (isEnabled) => {
-    if (props.translations?.boolean_options) {
-        return isEnabled 
-            ? props.translations.boolean_options.enabled || 'Enabled'
-            : props.translations.boolean_options.disabled || 'Disabled';
-    }
     return isEnabled ? 'Enabled' : 'Disabled';
 };
 
@@ -195,7 +189,7 @@ onMounted(() => {
                         v-model="value"
                         :name="setting.key"
                         :options="setting.options || []"
-                        :placeholder="translations?.select_placeholder || 'Select an option'"
+                        placeholder="Select an option"
                         class="mt-1 block w-full transition-all duration-200 focus:ring-blue-500 focus:border-blue-500"
                         :class="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': error }"
                         @change="updateValue($event.target.value)"

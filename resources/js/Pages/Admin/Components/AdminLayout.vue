@@ -20,12 +20,12 @@
             </div>
 
             <nav class="mt-8">
-                <SidebarLink :href="route('admin.dashboard')" :label="translations.nav.dashboard" icon="dashboard" />
-                <SidebarLink href="#" :label="translations.nav.products" icon="product" />
-                <SidebarLink href="#" :label="translations.nav.categories" icon="category" />
-                <SidebarLink href="#" :label="translations.nav.orders" icon="order" />
-                <SidebarLink href="#" :label="translations.nav.customers" icon="customer" />
-                <SidebarLink :href="route('admin.settings.index')" :label="translations.nav.settings" icon="setting" />
+                <SidebarLink :href="route('admin.dashboard')" label="Dashboard" icon="dashboard" />
+                <SidebarLink :href="route('admin.products.index')" label="Products" icon="product" />
+                <SidebarLink :href="route('admin.categories.index')" label="Categories" icon="category" />
+                <SidebarLink href="#" label="Orders" icon="order" />
+                <SidebarLink href="#" label="Customers" icon="customer" />
+                <SidebarLink :href="route('admin.settings.index')" label="Settings" icon="setting" />
             </nav>
         </div>
 
@@ -45,8 +45,6 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <LanguageSwitcher />
-
                     <div class="relative">
                         <button
                             @click="logout"
@@ -56,11 +54,14 @@
                             <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm9 12V8.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L8 8.414V15.5a.5.5 0 001 0z" clip-rule="evenodd" />
                             </svg>
-                            <span>{{ translations.auth.logout }}</span>
+                            <span>Logout</span>
                         </button>
                     </div>
                 </div>
             </header>
+
+            <!-- Alert Container -->
+            <AlertContainer ref="alertContainer" position="top-right" />
 
             <!-- Main content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4">
@@ -71,46 +72,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, usePage, router } from '@inertiajs/vue3';
-import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
+import { ref } from 'vue';
+import { Link, router } from '@inertiajs/vue3';
 import SidebarLink from './SidebarLink.vue';
-
-const page = usePage();
-const defaultTranslations = {
-    auth: {
-        logout: 'Logout'
-    },
-    nav: {
-        dashboard: 'Dashboard',
-        products: 'Products',
-        categories: 'Categories',
-        orders: 'Orders',
-        customers: 'Customers',
-        settings: 'Settings'
-    }
-};
-
-const translations = computed(() => {
-    if (page.props.translations && page.props.translations.admin) {
-        return {
-            auth: {
-                logout: page.props.translations.admin.auth?.logout || 'Logout'
-            },
-            nav: {
-                dashboard: page.props.translations.admin.nav?.dashboard || 'Dashboard',
-                products: page.props.translations.admin.nav?.products || 'Products',
-                categories: page.props.translations.admin.nav?.categories || 'Categories',
-                orders: page.props.translations.admin.nav?.orders || 'Orders',
-                customers: page.props.translations.admin.nav?.customers || 'Customers',
-                settings: page.props.translations.admin.nav?.settings || 'Settings'
-            }
-        };
-    }
-    return defaultTranslations;
-});
+import AlertContainer from '@/Components/AlertContainer.vue';
 
 const sidebarOpen = ref(false);
+const alertContainer = ref(null);
 
 const logout = () => {
     router.post('/admin/logout');

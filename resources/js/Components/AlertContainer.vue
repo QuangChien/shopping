@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import Alert from './Alert.vue';
+import AlertService from '@/Services/AlertService';
 
 // Unique ID generator for alerts
 const uniqueId = () => {
@@ -41,40 +42,7 @@ const positionClasses = computed(() => {
     return positions[props.position];
 });
 
-// Get flash messages from Inertia
-const page = usePage();
-watch(() => page.props.flash, (newFlash) => {
-    if (newFlash) {
-        // Create a unique ID for this set of flash messages to avoid duplicates
-        const flashId = JSON.stringify(newFlash);
-        
-        // Only process if we haven't seen this exact flash message before
-        if (!processedFlashIds.value.has(flashId)) {
-            processedFlashIds.value.add(flashId);
-            
-            // Process different types of flash messages
-            if (newFlash.success) {
-                addAlert('success', newFlash.success);
-            }
-            if (newFlash.error) {
-                addAlert('error', newFlash.error);
-            }
-            if (newFlash.warning) {
-                addAlert('warning', newFlash.warning);
-            }
-            if (newFlash.info) {
-                addAlert('info', newFlash.info);
-            }
-            
-            // Limit the size of our set to avoid memory leaks
-            if (processedFlashIds.value.size > 10) {
-                processedFlashIds.value.clear();
-            }
-        }
-    }
-}, { immediate: true, deep: true });
-
-// Add new alert
+// Add new alert – define addAlert before using it in watch
 const addAlert = (type, message, options = {}) => {
     const id = uniqueId();
     const alert = {
@@ -110,6 +78,54 @@ const removeAlert = (id) => {
     }
 };
 
+// Handle alert from AlertService
+const handleServiceAlert = (alert) => {
+    addAlert(alert.type, alert.message, alert.options);
+};
+
+// Get flash messages from Inertia – moved after defining addAlert
+const page = usePage();
+watch(() => page.props.flash, (newFlash) => {
+    if (newFlash) {
+        // Create a unique ID for this set of flash messages to avoid duplicates
+        const flashId = JSON.stringify(newFlash);
+        
+        // Only process if we haven't seen this exact flash message before
+        if (!processedFlashIds.value.has(flashId)) {
+            processedFlashIds.value.add(flashId);
+            
+            // Process different types of flash messages
+            if (newFlash.success) {
+                addAlert('success', newFlash.success);
+            }
+            if (newFlash.error) {
+                addAlert('error', newFlash.error);
+            }
+            if (newFlash.warning) {
+                addAlert('warning', newFlash.warning);
+            }
+            if (newFlash.info) {
+                addAlert('info', newFlash.info);
+            }
+            
+            // Limit the size of our set to avoid memory leaks
+            if (processedFlashIds.value.size > 10) {
+                processedFlashIds.value.clear();
+            }
+        }
+    }
+}, { immediate: true, deep: true });
+
+// Register with AlertService when component is mounted
+onMounted(() => {
+    AlertService.register(handleServiceAlert);
+});
+
+// Unregister when component is destroyed
+onUnmounted(() => {
+    AlertService.unregister();
+});
+
 // Expose methods for external use
 defineExpose({
     addAlert,
@@ -118,7 +134,7 @@ defineExpose({
 </script>
 
 <template>
-    <div :class="positionClasses" class="w-80 z-50 space-y-2">
+    <div :class="positionClasses" class="w-80 z-50 space-y-2" data-alert-container>
         <Alert
             v-for="alert in alerts"
             :key="alert.id"
@@ -131,4 +147,4 @@ defineExpose({
             class="shadow-lg"
         />
     </div>
-</template> 
+</template>

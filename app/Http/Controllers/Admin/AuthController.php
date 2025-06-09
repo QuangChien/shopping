@@ -48,7 +48,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => __('admin.auth.failed'),
+            'email' => 'These credentials do not match our records.',
         ]);
     }
 

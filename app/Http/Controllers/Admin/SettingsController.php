@@ -131,11 +131,11 @@ class SettingsController extends Controller
             // Clear cache
             Setting::clearCache();
             
-            return back()->with('success', trans('admin.settings.updated'));
+            return back()->with('success', 'Settings updated successfully.');
         } catch (ValidationException $e) {
-            return back()->with('error', trans('admin.settings.validation_error'))->withErrors($e->errors());
+            return back()->with('error', 'Validation error.')->withErrors($e->errors());
         } catch (\Exception $e) {
-            return back()->with('error', trans('admin.settings.update_error'));
+            return back()->with('error', 'Failed to update settings.');
         }
     }
     
@@ -151,7 +151,7 @@ class SettingsController extends Controller
                 
             return response()->json($settings);
         } catch (\Exception $e) {
-            return response()->json(['error' => trans('admin.settings.update_error')], 500);
+            return response()->json(['error' => 'Failed to retrieve settings.'], 500);
         }
     }
 } 

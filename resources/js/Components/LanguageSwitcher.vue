@@ -4,6 +4,9 @@ import { computed } from 'vue';
 
 const page = usePage();
 const currentLocale = computed(() => page.props.locale);
+const isAdminPage = computed(() => {
+    return page.url.startsWith('/admin');
+});
 
 const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -12,7 +15,8 @@ const languages = [
 </script>
 
 <template>
-    <div class="relative inline-block text-left">
+    <!-- Only show language switcher on frontend pages -->
+    <div v-if="!isAdminPage" class="relative inline-block text-left">
         <div class="group">
             <button
                 type="button"

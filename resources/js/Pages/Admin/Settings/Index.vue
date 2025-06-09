@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import AdminLayout from '@/Pages/Admin/Components/AdminLayout.vue';
 import SettingsNav from '@/Pages/Admin/Settings/Components/SettingsNav.vue';
 import SettingsPanel from '@/Pages/Admin/Settings/Components/SettingsPanel.vue';
 import SaveButton from '@/Pages/Admin/Settings/Components/SaveButton.vue';
@@ -19,14 +19,6 @@ const errorFields = ref([]);
 const settingRefs = ref({});
 const settingsPanel = ref(null);
 
-// Get translations
-const translations = computed(() => {
-    if (page.props.translations && page.props.translations.admin) {
-        return page.props.translations.admin.settings || {};
-    }
-    return {};
-});
-
 // Form for saving settings
 const form = useForm({
     settings: []
@@ -35,9 +27,9 @@ const form = useForm({
 // Current active tab (settings group)
 const activeTab = ref(props.groupNames[0] || 'general');
 
-// Use translations for group labels if available
+// Group labels
 const groupLabels = computed(() => {
-    const defaultLabels = {
+    return {
         general: 'General Information',
         currency: 'Currency',
         catalog: 'Product Catalog',
@@ -55,12 +47,6 @@ const groupLabels = computed(() => {
         security: 'Security',
         maintenance: 'Maintenance'
     };
-
-    if (translations.value.group_labels) {
-        return { ...defaultLabels, ...translations.value.group_labels };
-    }
-
-    return defaultLabels;
 });
 
 // Handle tab change
@@ -211,7 +197,7 @@ const saveSettings = () => {
         preserveScroll: true,
         onSuccess: () => {
             if (layout.value) {
-                layout.value.addAlert('success', translations.value.updated || 'Settings have been updated successfully.', {
+                layout.value.addAlert('success', 'Settings have been updated successfully.', {
                     autoClose: true,
                     duration: 5000
                 });
@@ -300,7 +286,7 @@ const scrollToFirstError = () => {
 </script>
 
 <template>
-    <Head :title="translations.title || 'System Settings'" />
+    <Head title="System Settings" />
 
     <AdminLayout ref="layout">
         <template #header>
@@ -316,10 +302,10 @@ const scrollToFirstError = () => {
                         </svg>
                     </button>
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        {{ translations.title || 'System Settings' }}
+                        System Settings
                     </h2>
                 </div>
-                <SaveButton :processing="form.processing" :translations="translations" @click="saveSettings" />
+                <SaveButton :processing="form.processing" @click="saveSettings" />
             </div>
         </template>
 
@@ -349,7 +335,6 @@ const scrollToFirstError = () => {
                         :group-names="groupNames"
                         :group-labels="groupLabels"
                         :active-tab="activeTab"
-                        :translations="translations"
                         :is-mobile="true"
                         @change-tab="changeTab"
                         class="border-b-0 rounded-t-lg"
@@ -365,7 +350,6 @@ const scrollToFirstError = () => {
                                     :group-names="groupNames"
                                     :group-labels="groupLabels"
                                     :active-tab="activeTab"
-                                    :translations="translations"
                                     @change-tab="changeTab"
                                 />
                             </div>
@@ -377,20 +361,18 @@ const scrollToFirstError = () => {
                                     :settings="settings[activeTab]"
                                     :group-name="activeTab"
                                     :group-label="groupLabels[activeTab]"
-                                    :translations="translations"
                                     :field-errors="fieldErrors"
                                     @update-setting="updateSettingValue"
                                     ref="settingsPanel"
                                 />
                                 <div v-else class="text-center p-6 text-gray-500">
-                                    {{ translations.no_settings || 'No settings available in this group.' }}
+                                    No settings available in this group.
                                 </div>
 
                                 <!-- Fixed bottom save button for mobile -->
                                 <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-center shadow-lg">
                                     <SaveButton
                                         :processing="form.processing"
-                                        :translations="translations"
                                         @click="saveSettings"
                                         custom-class="w-full flex justify-center"
                                     />

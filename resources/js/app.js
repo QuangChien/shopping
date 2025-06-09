@@ -7,12 +7,14 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import axios from 'axios';
 import AlertContainer from './Components/AlertContainer.vue';
+import AlertService from './Services/AlertService';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-// Fetch translations before app initialization
+// Fetch translations only for frontend
 const initApp = async () => {
     try {
+        // Only fetch translations for frontend pages, not admin
         const response = await axios.get('/api/translations');
         window.translations = response.data;
 
@@ -45,37 +47,25 @@ const initApp = async () => {
             setup({ el, App, props, plugin }) {
                 const app = createApp({ render: () => h(App, props) });
 
-                // Add global translation method
+                // Add global translation method (only needed for frontend)
                 app.config.globalProperties.$t = window.trans;
                 
                 // Register global components
                 app.component('AlertContainer', AlertContainer);
 
-                // Global alert management
+                // Global alert management - sử dụng AlertService thay vì truy cập DOM
                 app.config.globalProperties.$alert = {
                     success: (message, options = {}) => {
-                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
-                        if (alertContainer) {
-                            alertContainer.addAlert('success', message, options);
-                        }
+                        AlertService.success(message, options);
                     },
                     error: (message, options = {}) => {
-                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
-                        if (alertContainer) {
-                            alertContainer.addAlert('error', message, options);
-                        }
+                        AlertService.error(message, options);
                     },
                     warning: (message, options = {}) => {
-                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
-                        if (alertContainer) {
-                            alertContainer.addAlert('warning', message, options);
-                        }
+                        AlertService.warning(message, options);
                     },
                     info: (message, options = {}) => {
-                        const alertContainer = document.querySelector('#app').__vue_app__.config.globalProperties.$refs.alertContainer;
-                        if (alertContainer) {
-                            alertContainer.addAlert('info', message, options);
-                        }
+                        AlertService.info(message, options);
                     }
                 };
 
@@ -90,6 +80,25 @@ const initApp = async () => {
         });
     } catch (error) {
         console.error('Failed to load translations:', error);
+        
+        // Fallback: Initialize app without translations
+        createInertiaApp({
+            title: (title) => `${title} - ${appName}`,
+            resolve: (name) =>
+                resolvePageComponent(
+                    `./Pages/${name}.vue`,
+                    import.meta.glob('./Pages/**/*.vue'),
+                ),
+            setup({ el, App, props, plugin }) {
+                return createApp({ render: () => h(App, props) })
+                    .use(plugin)
+                    .use(ZiggyVue)
+                    .mount(el);
+            },
+            progress: {
+                color: '#4B5563',
+            },
+        });
     }
 };
 

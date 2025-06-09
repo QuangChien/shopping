@@ -157,7 +157,7 @@ const props = defineProps({
     },
     helperText: {
         type: String,
-        default: 'PNG, JPG, WEBP tối đa 2MB'
+        default: 'PNG, JPG, WEBP max 2MB'
     },
     error: {
         type: String,
@@ -281,6 +281,7 @@ const uploadFile = async (file) => {
 
         // Add CSRF token
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
         if (token) {
             xhr.setRequestHeader('X-CSRF-TOKEN', token);
         }
@@ -293,8 +294,12 @@ const uploadFile = async (file) => {
         });
 
         xhr.onload = function() {
+            console.log('Upload response status:', xhr.status); // Debug response status
+            
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
+                console.log('Upload response:', response); // Debug response data
+                
                 if (response.success) {
                     // Update value when upload successful
                     uploadedPath.value = response.path;
@@ -306,11 +311,19 @@ const uploadFile = async (file) => {
                     });
                 } else {
                     const error = response.message || 'Upload failed';
+                    console.error('Upload error:', error); // Debug error
                     uploadError.value = error;
                     emit('error', error);
                 }
             } else {
                 const error = 'An error occurred while uploading.';
+                console.error('Upload HTTP error:', xhr.status, xhr.statusText); // Debug HTTP error
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    console.error('Error details:', errorResponse); // Debug error details
+                } catch (e) {
+                    console.error('Raw error response:', xhr.responseText); // Debug raw response
+                }
                 uploadError.value = error;
                 emit('error', error);
             }
@@ -319,6 +332,7 @@ const uploadFile = async (file) => {
 
         xhr.onerror = function() {
             const error = 'Kết nối thất bại';
+            console.error('Network error during upload'); // Debug network error
             uploadError.value = error;
             emit('error', error);
             isUploading.value = false;
@@ -327,6 +341,7 @@ const uploadFile = async (file) => {
         xhr.send(formData);
     } catch (error) {
         const errorMessage = error.message || 'An error occurred while uploading.';
+        console.error('Exception during upload:', error); // Debug exception
         uploadError.value = errorMessage;
         emit('error', errorMessage);
         isUploading.value = false;

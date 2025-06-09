@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 class LanguageController extends Controller
 {
     /**
-     * Switch language
+     * Switch language for frontend only
      */
     public function switch(Request $request, $locale)
     {
@@ -23,7 +23,7 @@ class LanguageController extends Controller
     }
     
     /**
-     * Get current translations for frontend
+     * Get current translations for frontend only
      */
     public function getTranslations()
     {
@@ -31,12 +31,12 @@ class LanguageController extends Controller
         
         $translations = [
             'auth' => trans('auth', [], $locale) ?: [],
-            'admin' => [
-                'auth' => trans('admin.auth', [], $locale) ?: [],
-                'dashboard' => trans('admin.dashboard', [], $locale) ?: [],
-                'nav' => trans('admin.nav', [], $locale) ?: [],
-                'categories' => trans('admin.categories', [], $locale) ?: [],
-                'products' => trans('admin.products', [], $locale) ?: [],
+            // Frontend translations only
+            'frontend' => [
+                'common' => trans('frontend.common', [], $locale) ?: [],
+                'product' => trans('frontend.product', [], $locale) ?: [],
+                'cart' => trans('frontend.cart', [], $locale) ?: [],
+                'checkout' => trans('frontend.checkout', [], $locale) ?: [],
             ],
         ];
         

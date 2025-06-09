@@ -25,7 +25,7 @@ Route::middleware('auth:customer')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Language switching routes
+// Frontend-only language switching routes
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 Route::get('/api/translations', [LanguageController::class, 'getTranslations'])->name('translations');
 

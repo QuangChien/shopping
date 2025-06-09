@@ -1,38 +1,38 @@
 <template>
     <AdminLayout>
-        <Head :title="translations.dashboard.title" />
+        <Head title="Dashboard" />
 
         <div class="mb-8 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-gray-800">{{ translations.dashboard.title }}</h1>
-            <p class="mt-2 text-gray-600">{{ translations.dashboard.welcome }}</p>
+            <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+            <p class="mt-2 text-gray-600">Welcome to Admin Dashboard</p>
         </div>
 
         <!-- General statistics -->
         <div class="mb-8 grid grid-cols-1 gap-6 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
             <StatCard
-                :title="translations.dashboard.stats.total_customers"
+                title="Total customers"
                 :value="stats.totalCustomers"
                 icon="customer"
                 color="blue"
                 :trend="stats.customersTrend"
-                :subtitle="translations.dashboard.stats.vs_last_month"
+                subtitle="Compared to last month"
             />
             <StatCard
-                :title="translations.dashboard.stats.total_orders"
+                title="Total orders"
                 :value="stats.totalOrders"
                 icon="order"
                 color="green"
                 :trend="stats.ordersTrend"
-                :subtitle="translations.dashboard.stats.vs_last_month"
+                subtitle="Compared to last month"
             />
             <StatCard
-                :title="translations.dashboard.stats.total_products"
+                title="Total products"
                 :value="stats.totalProducts"
                 icon="product"
                 color="purple"
             />
             <StatCard
-                :title="translations.dashboard.stats.total_categories || 'Total category'"
+                title="Total categories"
                 :value="stats.totalCategories"
                 icon="category"
                 color="indigo"
@@ -43,7 +43,7 @@
         <div class="mb-8 grid grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-3 lg:px-8">
             <!-- Order chart last 7 days -->
             <div class="lg:col-span-2 rounded-lg bg-white p-6 shadow-md">
-                <h2 class="mb-4 text-xl font-bold text-gray-800">{{ translations.dashboard.stats.orders_last_7_days || 'Đơn hàng 7 ngày qua' }}</h2>
+                <h2 class="mb-4 text-xl font-bold text-gray-800">Orders last 7 days</h2>
                 <div class="h-80">
                     <OrdersChart
                         v-if="stats.ordersChart"
@@ -54,22 +54,22 @@
 
             <!-- Revenue this month -->
             <div class="rounded-lg bg-white p-6 shadow-md">
-                <h2 class="mb-4 text-xl font-bold text-gray-800">{{ translations.dashboard.stats.revenue || 'Doanh thu' }}</h2>
+                <h2 class="mb-4 text-xl font-bold text-gray-800">Revenue</h2>
                 <div class="mb-6">
                     <StatCard
-                        :title="translations.dashboard.stats.revenue_this_month || 'Doanh thu tháng này'"
+                        title="Revenue this month"
                         :value="stats.revenueThisMonth"
                         icon="revenue"
                         color="green"
                         :trend="stats.revenueTrend"
-                        :subtitle="translations.dashboard.stats.vs_last_month"
+                        subtitle="Compared to last month"
                         :is-currency="true"
                     />
                 </div>
 
                 <!-- Sort orders by status -->
                 <div class="mt-8">
-                    <h3 class="mb-3 text-lg font-semibold text-gray-700">{{ translations.dashboard.stats.orders_by_status || 'Đơn hàng theo trạng thái' }}</h3>
+                    <h3 class="mb-3 text-lg font-semibold text-gray-700">Orders by status</h3>
                     <div class="space-y-4">
                         <div v-for="(count, status) in stats.ordersByStatus" :key="status" class="flex items-center">
                             <span :class="`inline-flex rounded-full w-3 h-3 mr-2 ${getStatusColor(status).replace('text-', 'bg-')}`"></span>
@@ -85,7 +85,7 @@
         <div class="mb-8 grid grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
             <!-- Top products -->
             <div class="rounded-lg bg-white p-6 shadow-md">
-                <h2 class="mb-4 text-xl font-bold text-gray-800">{{ translations.dashboard.stats.top_products || 'Top products' }}</h2>
+                <h2 class="mb-4 text-xl font-bold text-gray-800">Top products</h2>
                 <div class="overflow-hidden">
                     <ul class="divide-y divide-gray-200">
                         <li v-for="(product, index) in stats.topProducts" :key="product.id" class="py-3 flex items-center">
@@ -95,7 +95,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-sm font-medium text-gray-900">{{ product.name }}</h3>
                                 <p class="text-sm text-gray-500">
-                                    {{ product.order_count }} {{ translations.dashboard.stats.orders || 'orders' }}
+                                    {{ product.order_count }} orders
                                 </p>
                             </div>
                         </li>
@@ -105,7 +105,7 @@
 
             <!-- Top categories -->
             <div class="rounded-lg bg-white p-6 shadow-md">
-                <h2 class="mb-4 text-xl font-bold text-gray-800">{{ translations.dashboard.stats.top_categories || 'Top danh mục' }}</h2>
+                <h2 class="mb-4 text-xl font-bold text-gray-800">Top categories</h2>
                 <div class="overflow-hidden">
                     <ul class="divide-y divide-gray-200">
                         <li v-for="(category, index) in stats.topCategories" :key="category.id" class="py-3 flex items-center">
@@ -115,7 +115,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-sm font-medium text-gray-900">{{ category.name }}</h3>
                                 <p class="text-sm text-gray-500">
-                                    {{ category.order_count }} {{ translations.dashboard.stats.orders || 'orders' }}
+                                    {{ category.order_count }} orders
                                 </p>
                             </div>
                         </li>
@@ -127,7 +127,7 @@
         <!-- Recent Orders -->
         <div class="px-4 sm:px-6 lg:px-8 mb-8">
             <div class="rounded-lg bg-white p-6 shadow-md">
-                <h2 class="mb-4 text-xl font-bold text-gray-800">{{ translations.dashboard.stats.recent_orders }}</h2>
+                <h2 class="mb-4 text-xl font-bold text-gray-800">Recent Orders</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -157,7 +157,7 @@
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                     <a href="#" class="text-blue-600 hover:text-blue-900">
-                                        {{ translations.dashboard.view_details || 'Detail' }}
+                                        Detail
                                     </a>
                                 </td>
                             </tr>
@@ -171,8 +171,7 @@
 
 <script setup>
 import { Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import AdminLayout from '@/Pages/Admin/Components/AdminLayout.vue';
 import StatCard from './Components/StatCard.vue';
 import OrdersChart from './Components/OrdersChart.vue';
 
@@ -181,81 +180,34 @@ const props = defineProps({
     auth: Object
 });
 
-const page = usePage();
-const defaultTranslations = {
-    dashboard: {
-        title: 'Dashboard',
-        welcome: 'Welcome to Admin Dashboard',
-        stats: {
-            total_customers: 'Total customers',
-            total_orders: 'Total orders',
-            total_products: 'Total products',
-            total_categories: 'Total categories',
-            revenue: 'Revenue',
-            revenue_this_month: 'Revenue this month',
-            recent_orders: 'Recent Orders',
-            orders_by_status: 'Order by status',
-            vs_last_month: 'Compared to last month',
-            top_products: 'Top products',
-            top_categories: 'Top categories',
-            orders: 'orders',
-            orders_last_7_days: 'Orders last 7 days'
-        },
-        view_details: 'Detail'
-    }
-};
-
-const translations = computed(() => {
-    if (page.props.translations && page.props.translations.admin) {
-        return {
-            dashboard: {
-                title: page.props.translations.admin.dashboard?.title || defaultTranslations.dashboard.title,
-                welcome: page.props.translations.admin.dashboard?.welcome || defaultTranslations.dashboard.welcome,
-                stats: {
-                    total_customers: page.props.translations.admin.dashboard?.stats?.total_customers || defaultTranslations.dashboard.stats.total_customers,
-                    total_orders: page.props.translations.admin.dashboard?.stats?.total_orders || defaultTranslations.dashboard.stats.total_orders,
-                    total_products: page.props.translations.admin.dashboard?.stats?.total_products || defaultTranslations.dashboard.stats.total_products,
-                    total_categories: page.props.translations.admin.dashboard?.stats?.total_categories || defaultTranslations.dashboard.stats.total_categories,
-                    revenue: page.props.translations.admin.dashboard?.stats?.revenue || defaultTranslations.dashboard.stats.revenue,
-                    revenue_this_month: page.props.translations.admin.dashboard?.stats?.revenue_this_month || defaultTranslations.dashboard.stats.revenue_this_month,
-                    recent_orders: page.props.translations.admin.dashboard?.stats?.recent_orders || defaultTranslations.dashboard.stats.recent_orders,
-                    orders_by_status: page.props.translations.admin.dashboard?.stats?.orders_by_status || defaultTranslations.dashboard.stats.orders_by_status,
-                    vs_last_month: page.props.translations.admin.dashboard?.stats?.vs_last_month || defaultTranslations.dashboard.stats.vs_last_month,
-                    top_products: page.props.translations.admin.dashboard?.stats?.top_products || defaultTranslations.dashboard.stats.top_products,
-                    top_categories: page.props.translations.admin.dashboard?.stats?.top_categories || defaultTranslations.dashboard.stats.top_categories,
-                    orders: page.props.translations.admin.dashboard?.stats?.orders || defaultTranslations.dashboard.stats.orders,
-                    orders_last_7_days: page.props.translations.admin.dashboard?.stats?.orders_last_7_days || defaultTranslations.dashboard.stats.orders_last_7_days
-                },
-                view_details: page.props.translations.admin.dashboard?.view_details || defaultTranslations.dashboard.view_details
-            }
-        };
-    }
-    return defaultTranslations;
-});
-
-function getStatusColor(status) {
-    switch (status) {
-        case 'pending':
-            return 'bg-yellow-100 text-yellow-800';
-        case 'processing':
-            return 'bg-blue-100 text-blue-800';
-        case 'completed':
-            return 'bg-green-100 text-green-800';
-        case 'cancelled':
-            return 'bg-red-100 text-red-800';
-        default:
-            return 'bg-gray-100 text-gray-800';
-    }
-}
-
+/**
+ * Format date for display
+ */
 function formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('vi-VN', {
+    return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
+        month: 'short',
+        day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
     }).format(date);
+}
+
+/**
+ * Get color class for order status
+ */
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'text-yellow-800 bg-yellow-100',
+        'processing': 'text-blue-800 bg-blue-100',
+        'completed': 'text-green-800 bg-green-100',
+        'cancelled': 'text-red-800 bg-red-100',
+        'shipped': 'text-purple-800 bg-purple-100',
+        'delivered': 'text-indigo-800 bg-indigo-100'
+    };
+
+    return colors[status] || 'text-gray-800 bg-gray-100';
 }
 </script>

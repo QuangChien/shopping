@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\CategoryCreateRequest;
 use App\Http\Requests\Admin\CategoryUpdateRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -79,12 +80,14 @@ class CategoryController extends Controller
     public function store(CategoryCreateRequest $request)
     {
         try {
+            Log::info('Category create data:', $request->validated());
             $category = $this->categoryService->createCategory($request->validated());
 
             return redirect()
                 ->route('admin.categories.index')
                 ->with('success', 'The category has been created successfully.');
         } catch (\Exception $e) {
+            Log::error('Error creating category: ' . $e->getMessage());
             return redirect()
                 ->back()
                 ->withInput()

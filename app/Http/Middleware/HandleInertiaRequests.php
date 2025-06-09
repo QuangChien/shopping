@@ -29,21 +29,21 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
+        $isAdminRoute = str_starts_with($request->path(), 'admin');
+        
+        return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
             ],
-            'locale' => app()->getLocale(),
-            'translations' => [
+            'locale' => $isAdminRoute ? 'en' : app()->getLocale(),
+            'translations' => $isAdminRoute ? [] : [
                 'auth' => trans('auth'),
-                'admin' => [
-                    'auth' => trans('admin.auth'),
-                    'dashboard' => trans('admin.dashboard'),
-                    'nav' => trans('admin.nav'),
-                    'settings' => trans('admin.settings'),
-                    'categories' => trans('admin.categories'),
-                    'products' => trans('admin.products'),
+                // Frontend translations only
+                'frontend' => [
+                    'common' => trans('frontend.common'),
+                    'product' => trans('frontend.product'),
+                    'cart' => trans('frontend.cart'),
+                    'checkout' => trans('frontend.checkout'),
                 ],
             ],
             'flash' => [
@@ -52,6 +52,6 @@ class HandleInertiaRequests extends Middleware
                 'warning' => fn () => $request->session()->get('warning'),
                 'info' => fn () => $request->session()->get('info'),
             ],
-        ];
+        ]);
     }
 }

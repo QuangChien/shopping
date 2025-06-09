@@ -73,7 +73,7 @@ class OrderController extends Controller
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Không thể tạo đơn hàng: ' . $e->getMessage());
+                ->with('error', 'Unable to create order: ' . $e->getMessage());
         }
     }
 
@@ -118,7 +118,7 @@ class OrderController extends Controller
             $this->orderService->updateOrder($order, $validatedData);
 
             return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', 'Đơn hàng đã được cập nhật thành công.');
+                ->with('success', 'Order has been updated successfully.');
         } catch (\Exception $e) {
             Log::error('Error updating order: ' . $e->getMessage());
 
