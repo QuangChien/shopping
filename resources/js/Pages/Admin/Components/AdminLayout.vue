@@ -21,7 +21,29 @@
 
             <nav class="mt-8">
                 <SidebarLink :href="route('admin.dashboard')" label="Dashboard" icon="dashboard" />
-                <SidebarLink :href="route('admin.products.index')" label="Products" icon="product" />
+                
+                <!-- Products Menu -->
+                <div class="mt-2">
+                    <div @click="toggleProductsMenu" class="flex items-center justify-between rounded-md p-2 text-gray-300 hover:bg-gray-800 hover:text-white cursor-pointer">
+                        <div class="flex items-center">
+                            <span class="mr-2">
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span>Products</span>
+                        </div>
+                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': showProductsMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    
+                    <div v-show="showProductsMenu" class="pl-4 mt-1 space-y-1">
+                        <SidebarLink :href="route('admin.products.index')" label="All Products" icon="product" />
+                        <SidebarLink :href="route('admin.attributes.index')" label="Attributes" icon="attribute" />
+                    </div>
+                </div>
+                
                 <SidebarLink :href="route('admin.categories.index')" label="Categories" icon="category" />
                 <SidebarLink href="#" label="Orders" icon="order" />
                 <SidebarLink href="#" label="Customers" icon="customer" />
@@ -79,6 +101,11 @@ import AlertContainer from '@/Components/AlertContainer.vue';
 
 const sidebarOpen = ref(false);
 const alertContainer = ref(null);
+const showProductsMenu = ref(true); // Set to true to show it by default
+
+const toggleProductsMenu = () => {
+    showProductsMenu.value = !showProductsMenu.value;
+};
 
 const logout = () => {
     router.post('/admin/logout');

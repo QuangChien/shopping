@@ -13,6 +13,11 @@ class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'sku',
         'tax_class_id',
@@ -38,9 +43,9 @@ class Product extends Model
     /**
      * Get the inventory for this product.
      */
-    public function inventory(): HasOne
+    public function inventory(): HasMany
     {
-        return $this->hasOne(Inventory::class);
+        return $this->hasMany(Inventory::class);
     }
 
     /**
@@ -107,9 +112,8 @@ class Product extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'product_categories')
-                    ->withPivot('position')
-                    ->withTimestamps()
-                    ->orderByPivot('position');
+            ->withPivot('position')
+            ->orderBy('product_categories.position');
     }
 
     /**
@@ -117,7 +121,7 @@ class Product extends Model
      */
     public function media(): HasMany
     {
-        return $this->hasMany(ProductMedia::class)->orderBy('sort_order');
+        return $this->hasMany(ProductMedia::class)->orderBy('position');
     }
 
     /**
@@ -133,7 +137,7 @@ class Product extends Model
      */
     public function varcharValues(): HasMany
     {
-        return $this->hasMany(ProductAttributeValueVarchar::class);
+        return $this->hasMany(ProductAttributeValueVarchar::class, 'product_id');
     }
 
     /**
@@ -141,7 +145,7 @@ class Product extends Model
      */
     public function textValues(): HasMany
     {
-        return $this->hasMany(ProductAttributeValueText::class);
+        return $this->hasMany(ProductAttributeValueText::class, 'product_id');
     }
 
     /**
@@ -149,7 +153,31 @@ class Product extends Model
      */
     public function decimalValues(): HasMany
     {
-        return $this->hasMany(ProductAttributeValueDecimal::class);
+        return $this->hasMany(ProductAttributeValueDecimal::class, 'product_id');
+    }
+
+    /**
+     * Get int attribute values.
+     */
+    public function intValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValueInt::class, 'product_id');
+    }
+
+    /**
+     * Get datetime attribute values.
+     */
+    public function datetimeValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValueDatetime::class, 'product_id');
+    }
+
+    /**
+     * Get boolean attribute values.
+     */
+    public function booleanValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValueBoolean::class, 'product_id');
     }
 
     /**
@@ -166,5 +194,29 @@ class Product extends Model
     public function getRouteKeyName(): string
     {
         return 'sku';
+    }
+
+    /**
+     * Get the variants for this product.
+     */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    /**
+     * Check if product is configurable.
+     */
+    public function isConfigurable(): bool
+    {
+        return $this->type_id === 'configurable';
+    }
+
+    /**
+     * Get the default variant for this product.
+     */
+    public function defaultVariant(): HasOne
+    {
+        return $this->hasOne(ProductVariant::class)->where('is_default', true);
     }
 } 

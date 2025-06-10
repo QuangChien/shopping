@@ -17,6 +17,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AuthService::class, function ($app) {
             return new AuthService();
         });
+
+        // Add these repositories and services
+        $this->app->bind(
+            \App\Contracts\Repositories\ProductRepositoryInterface::class,
+            \App\Repositories\ProductRepository::class
+        );
+
+        $this->app->bind(
+            \App\Contracts\Services\ProductServiceInterface::class,
+            \App\Services\ProductService::class
+        );
     }
 
     /**

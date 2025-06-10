@@ -86,6 +86,22 @@ class ProductAttribute extends Model
     }
 
     /**
+     * Get options for this attribute.
+     */
+    public function options(): HasMany
+    {
+        return $this->hasMany(AttributeOption::class, 'attribute_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Determine if this attribute has options.
+     */
+    public function hasOptions(): bool
+    {
+        return in_array($this->frontend_input, ['select', 'multiselect']);
+    }
+
+    /**
      * Scope a query to only include required attributes.
      */
     public function scopeRequired($query)
@@ -114,6 +130,6 @@ class ProductAttribute extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'code';
+        return 'id';
     }
 } 

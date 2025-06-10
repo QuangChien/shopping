@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\UploadController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,13 @@ Route::middleware('admin.auth')->prefix('admin')->name('admin.')->group(function
     
     // Products
     Route::resource('products', ProductController::class);
+    
+    // Attributes
+    Route::resource('attributes', AttributeController::class);
+    Route::get('attributes/{attribute}/options', [AttributeController::class, 'options'])->name('attributes.options');
+    Route::post('attributes/{attribute}/options', [AttributeController::class, 'storeOption'])->name('attributes.options.store');
+    Route::put('attributes/{attribute}/options/{option}', [AttributeController::class, 'updateOption'])->name('attributes.options.update');
+    Route::delete('attributes/{attribute}/options/{option}', [AttributeController::class, 'destroyOption'])->name('attributes.options.destroy');
     
     // Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

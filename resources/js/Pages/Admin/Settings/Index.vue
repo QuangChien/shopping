@@ -196,12 +196,7 @@ const saveSettings = () => {
     form.post(route('admin.settings.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            if (layout.value) {
-                layout.value.addAlert('success', 'Settings have been updated successfully.', {
-                    autoClose: true,
-                    duration: 5000
-                });
-            }
+            
         },
         onError: (errors) => {
             // Process errors and extract setting IDs
@@ -248,14 +243,6 @@ const saveSettings = () => {
                     errorMessages.push(errors[key]);
                 }
             }
-
-            // Show error notification
-            if (layout.value) {
-                layout.value.addAlert('error', errorMessages[0] || 'An error occurred while saving settings.', {
-                    autoClose: true,
-                    duration: 7000
-                });
-            }
         }
     });
 };
@@ -289,8 +276,7 @@ const scrollToFirstError = () => {
     <Head title="System Settings" />
 
     <AdminLayout ref="layout">
-        <template #header>
-            <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <!-- Mobile menu button -->
                     <button
@@ -307,7 +293,6 @@ const scrollToFirstError = () => {
                 </div>
                 <SaveButton :processing="form.processing" @click="saveSettings" />
             </div>
-        </template>
 
         <div class="py-6 md:py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
